@@ -4,7 +4,6 @@ package xyz.patzj.alterator.algorithm.aes;
  * Interface for AES Algorithm constants.
  * @author patzj
  */
-@SuppressWarnings("unused")
 public interface AESConstants {
     // Encryption substitution box
     int[][] S_BOX = {
@@ -47,4 +46,7 @@ public interface AESConstants {
             {0x1b, 0x00, 0x00, 0x00},
             {0x36, 0x00, 0x00, 0x00}
     };
+    
+    int REQ_BLOCK_SIZE = 16; // required number of bytes in a block
+    int REQ_ROW_SIZE = 4; // required number of bytes in a sub-process
 }

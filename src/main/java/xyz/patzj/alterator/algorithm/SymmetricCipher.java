@@ -4,7 +4,6 @@ package xyz.patzj.alterator.algorithm;
  * Symmetric Cipher abstract class.
  * @author patzj
  */
-@SuppressWarnings("unused")
 public abstract class SymmetricCipher implements Cipher {
     private String plainText;
     private String cipherText;
@@ -13,17 +12,7 @@ public abstract class SymmetricCipher implements Cipher {
     public SymmetricCipher() { }
 
     /**
-     *
-     * @param plainText Plaintext to be encrypted.
-     * @param key Private key for encryption and decryption.
-     */
-    public SymmetricCipher(String plainText, String key) {
-        setPlainText(plainText);
-        setKey(key);
-    }
-
-    /**
-     *
+     * Set plaintext.
      * @return Plaintext.
      */
     public String getPlainText() {
@@ -31,7 +20,7 @@ public abstract class SymmetricCipher implements Cipher {
     }
 
     /**
-     *
+     * Return plaintext.
      * @param plainText Plaintext to be encrypted.
      */
     public void setPlainText(String plainText) {
@@ -39,7 +28,7 @@ public abstract class SymmetricCipher implements Cipher {
     }
 
     /**
-     *
+     * Set ciphertext.
      * @return Ciphertext.
      */
     public String getCipherText() {
@@ -47,7 +36,7 @@ public abstract class SymmetricCipher implements Cipher {
     }
 
     /**
-     *
+     * Return ciphertext.
      * @param cipherText Ciphertext to be decrypted
      */
     public void setCipherText(String cipherText) {
@@ -55,7 +44,7 @@ public abstract class SymmetricCipher implements Cipher {
     }
 
     /**
-     *
+     * Set private key.
      * @return Private key.
      */
     public String getKey() {
@@ -63,7 +52,7 @@ public abstract class SymmetricCipher implements Cipher {
     }
 
     /**
-     *
+     * Return private key.
      * @param key Private Key for encryption and decryption.
      */
     public void setKey(String key) {

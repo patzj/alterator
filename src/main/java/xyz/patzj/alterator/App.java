@@ -1,30 +1,27 @@
 package xyz.patzj.alterator;
 
-import xyz.patzj.alterator.algorithm.aes.AESKeyExpansion;
+import xyz.patzj.alterator.algorithm.SymmetricCipher;
 
-/**
- * Hello world!
- *
- */
+import java.util.logging.Logger;
+
 public class App {
+    public static final Logger LOGGER
+            = Logger.getLogger(App.class.getName());
+
     public static void main(String[] args) {
         String key = "Thats my Kung Fu";
-        AESKeyExpansion keyExpansion = new AESKeyExpansion(key);
+        String pt = "Two One Nine Two";
+        SymmetricCipher cipher = null;
+
         try {
-            keyExpansion.expandKey();
-        } catch(Exception e) {
-            e.printStackTrace();
+            cipher = Alterator.getInstance(Alterator.AES);
+        } catch(AlgorithmNotFoundException e) {
+            LOGGER.severe(e.getMessage());
         }
 
-        for(int w = 0; w <= 10; w++) {
-            int[][] subkey = keyExpansion.getSubKey(w);
-
-            for (int x = 0; x < 4; x++) {
-                for (int y = 0; y < 4; y++) {
-                    System.out.print(Integer.toHexString(subkey[x][y]) + "\t");
-                }
-            }
-            System.out.println();
-        }
+        cipher.setPlainText(pt);
+        cipher.setKey(key);
+        cipher.encrypt();
+        System.out.println(cipher.getCipherText());
     }
 }
