@@ -1,15 +1,15 @@
 package xyz.patzj.alterator.algorithm.aes;
 
 import java.util.Arrays;
+
+import xyz.patzj.alterator.algorithm.BlockKeyExpander;
 import static xyz.patzj.alterator.algorithm.aes.AESConstants.*;
 
 /**
  * AES Algorithm key expansion schedule.
  * @author patzj
  */
-public class AESKeyExpander {
-    private String key;
-    private int subKey[][][] = new int[11][4][4]; // round 0 to 10 of 128-bit block
+public class AESKeyExpander extends BlockKeyExpander{
     private int round;
     private int row;
     private final int REQ_KEY_SIZE = 16; // required key size
@@ -25,33 +25,7 @@ public class AESKeyExpander {
      * @param key Private key for key expansion.
      */
     public AESKeyExpander(String key) {
-        setKey(key);
-    }
-
-    /**
-     * Return private key.
-     * @return Private key.
-     */
-    public String getKey() {
-        return key;
-    }
-
-    /**
-     * Set private key.
-     * @param key Private key for key expansion.
-     */
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    /**
-     * Returns the subkey of the specified round.
-     * @param round Current AES encryption or decryption round.
-     * @return Subkey for specific AES encryption or decryption round.
-     * @throws IndexOutOfBoundsException
-     */
-    public int[][] getSubKey(int round) throws IndexOutOfBoundsException {
-        return subKey[round];
+        super.setKey(key);
     }
 
     /**
@@ -67,7 +41,7 @@ public class AESKeyExpander {
         // assign to subkey 0
         for(int x = 0; x < REQ_ROW_SIZE; x++) {
             for(int y = 0; y < REQ_ROW_SIZE; y++) {
-                subKey[0][x][y] = keyInHex[counter];
+                getSubKey(0)[x][y] = keyInHex[counter];
                 counter++;
             }
         }
@@ -75,7 +49,7 @@ public class AESKeyExpander {
         round = 1; // initialize round for processing
         while(round <= MAX_ROUND) {
             int prev = round - 1;
-            int[] tmp = Arrays.copyOf(subKey[prev][3], 4); // get 4th row of previous subkey
+            int[] tmp = Arrays.copyOf(getSubKey(prev)[3], 4); // get 4th row of previous subkey
 
             doCircularLeftShift(tmp);
             doSubBytes(tmp);
@@ -83,13 +57,13 @@ public class AESKeyExpander {
 
             row = 0; // initialize or reinitialize row for processing
             while (row < REQ_ROW_SIZE) {
-                tmp[0] ^= subKey[prev][row][0];
-                subKey[round][row][0] = tmp[0]; // assign byte to current round subKey
+                tmp[0] ^= getSubKey(prev)[row][0];
+                getSubKey(round)[row][0] = tmp[0]; // assign byte to current round subKey
 
                 // xor with previous round  key
                 for (int i = 1; i < REQ_ROW_SIZE; i++) {
-                    tmp[i] ^= subKey[prev][row][i];
-                    subKey[round][row][i] = tmp[i]; // assign byte to current round subKey
+                    tmp[i] ^= getSubKey(prev)[row][i];
+                    getSubKey(round)[row][i] = tmp[i]; // assign byte to current round subKey
                 }
                 row++;
             }
@@ -105,8 +79,8 @@ public class AESKeyExpander {
      */
     private String getPaddedKey() throws Exception {
         int keyPadding;
-        int keySize = key.length();
-        StringBuilder tmpKey = new StringBuilder(key);
+        int keySize = getKey().length();
+        StringBuilder tmpKey = new StringBuilder(getKey());
 
         if(keySize > REQ_KEY_SIZE)
             throw new Exception();

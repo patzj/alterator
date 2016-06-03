@@ -1,6 +1,6 @@
 package xyz.patzj.alterator;
 
-import xyz.patzj.alterator.algorithm.SymmetricCipher;
+import xyz.patzj.alterator.algorithm.BlockSymmetricCipher;
 import xyz.patzj.alterator.algorithm.aes.AESCore;
 
 /**
@@ -9,9 +9,9 @@ import xyz.patzj.alterator.algorithm.aes.AESCore;
 public class Alterator {
     public static final int AES = 1;
 
-    public static SymmetricCipher getInstance(int algorithm)
+    public static BlockSymmetricCipher getInstance (int algorithm)
             throws AlgorithmNotFoundException {
-        SymmetricCipher cipher;
+        BlockSymmetricCipher cipher;
 
         switch(algorithm) {
             case 1:

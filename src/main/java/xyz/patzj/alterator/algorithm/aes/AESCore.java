@@ -2,34 +2,19 @@ package xyz.patzj.alterator.algorithm.aes;
 
 import java.util.Arrays;
 import java.util.logging.Logger;
-import xyz.patzj.alterator.algorithm.SymmetricCipher;
+import xyz.patzj.alterator.algorithm.BlockSymmetricCipher;
 import static xyz.patzj.alterator.algorithm.aes.AESConstants.*;
 
 /**
  * AES Algorithm core.
  * @author patzj
  */
-public class AESCore extends SymmetricCipher {
-	private int[][] stateMatrix;
-	private AESKeyExpander keyExpander;
+public class AESCore extends BlockSymmetricCipher {
 	private final int MAX_ROUND = 10;
 	private static final Logger LOGGER 
 		= Logger.getLogger(AESCore.class.getName());
 
-    /**
-     * Reserve memory space for the 128-bit state matrix of data.
-     */
-	public AESCore() { 
-		stateMatrix = new int[4][4];
-	}
-
-    /**
-     * Returns the 128-bit state matrix of data.
-     * @return Two-dimensional array of bytes.
-     */
-	public int[][] getStateMatrix() {
-		return stateMatrix;
-	}
+	public AESCore() { }
 
     /**
      * Performs the encryption algorithm.
@@ -37,11 +22,10 @@ public class AESCore extends SymmetricCipher {
     public void encrypt() {
     	String text = getPlainText();
 		int round;
-    	keyExpander = new AESKeyExpander(getKey());
         StringBuilder tmp = new StringBuilder();
 
     	try {
-    		keyExpander.expandKey();
+    		getKeyExpander().expandKey();
     	} catch(Exception e) {
     		LOGGER.severe(e.getMessage());
     		System.exit(0);
@@ -80,7 +64,7 @@ public class AESCore extends SymmetricCipher {
         // set to ciphertext
         for(int x = 0; x < REQ_ROW_SIZE; x++) {
             for(int y = 0; y < REQ_ROW_SIZE; y++) {
-                tmp.append((char) stateMatrix[x][y]);
+                tmp.append((char) getStateMatrix()[x][y]);
             }
         }
         setCipherText(tmp.toString());
@@ -96,10 +80,12 @@ public class AESCore extends SymmetricCipher {
      */
     private void initstateMatrix(byte[] data) {
     	int counter = 0;
-    	
+
+        setStateMatrix(new int[4][4]);
+
     	for(int x = 0; x < 4; x++) {
     		for(int y = 0; y < 4; y++) {
-    			stateMatrix[x][y] = data[counter];
+    			getStateMatrix()[x][y] = data[counter];
     			counter++;
     		}
     	}
@@ -132,7 +118,7 @@ public class AESCore extends SymmetricCipher {
     private void doAddRoundKey(int round) {
         for(int x = 0; x < REQ_ROW_SIZE; x++) {
             for(int y = 0; y < REQ_ROW_SIZE; y++) {
-                stateMatrix[x][y] ^= keyExpander.getSubKey(round)[x][y];
+                getStateMatrix()[x][y] ^= getKeyExpander().getSubKey(round)[x][y];
             }
         }
     }
@@ -146,7 +132,7 @@ public class AESCore extends SymmetricCipher {
 
         for(int i = 0; i < REQ_ROW_SIZE; i++) {
             for(int j = 0; j < REQ_ROW_SIZE; j++) {
-                byteInHex = Integer.toHexString(stateMatrix[i][j]);
+                byteInHex = Integer.toHexString(getStateMatrix()[i][j]);
                 if(byteInHex.length() > 1) {
                     x = Integer.parseInt(byteInHex.substring(0, 1), 16);
                     y = Integer.parseInt(byteInHex.substring(1), 16);
@@ -155,7 +141,7 @@ public class AESCore extends SymmetricCipher {
                     y = Integer.parseInt(byteInHex, 16);
                 }
 
-                stateMatrix[i][j] = S_BOX[x][y];
+                getStateMatrix()[i][j] = S_BOX[x][y];
             }
         }
     }
@@ -166,12 +152,12 @@ public class AESCore extends SymmetricCipher {
      * @param col Column (y) from the 128-bit state matrix.
      */
     private void doCircularLeftShift(int col) {
-        int tmp = stateMatrix[0][col];
+        int tmp = getStateMatrix()[0][col];
         for(int i = 0; i < REQ_ROW_SIZE; i++) {
             if(i == 3)
-                stateMatrix[i][col] = tmp;
+                getStateMatrix()[i][col] = tmp;
             else
-                stateMatrix[i][col] = stateMatrix[i + 1][col];
+                getStateMatrix()[i][col] = getStateMatrix()[i + 1][col];
         }
     }
 
@@ -184,7 +170,7 @@ public class AESCore extends SymmetricCipher {
         int n;
 
         for(int x = 0; x < REQ_ROW_SIZE; x++) {
-            tmp = Arrays.copyOf(stateMatrix[x], 4);
+            tmp = Arrays.copyOf(getStateMatrix()[x], 4);
             for(int y = 0; y < REQ_ROW_SIZE; y++) {
                 n = 0;
                 for(int z = 0; z < REQ_ROW_SIZE; z++) {
@@ -196,7 +182,7 @@ public class AESCore extends SymmetricCipher {
                         n ^= tmp[z];
                 }
 
-                stateMatrix[x][y] = n;
+                getStateMatrix()[x][y] = n;
             }
         }
     }
