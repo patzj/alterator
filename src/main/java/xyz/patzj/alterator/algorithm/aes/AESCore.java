@@ -71,7 +71,22 @@ public class AESCore extends BlockSymmetricCipher {
     }
 
     public void decrypt() {
-        // TODO decryption algorithm
+        String text = getCipherText();
+        int round;
+        StringBuilder tmp = new StringBuilder();
+
+        try {
+            getKeyExpander().expandKey();
+        } catch(Exception e) {
+            LOGGER.severe(e.getMessage());
+            System.exit(0);
+        }
+
+        if(text.length() % REQ_BLOCK_SIZE > 0)
+            text = doPadText(text);
+
+        initstateMatrix(text.getBytes());
+        doAddRoundKey(MAX_ROUND); // round 10
     }
 
     /**
